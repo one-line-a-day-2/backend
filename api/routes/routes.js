@@ -1,4 +1,4 @@
-require('dotenv').config(); 
+require("dotenv").config();
 const bcrypt = require("bcryptjs");
 const {
   authenticate,
@@ -14,6 +14,7 @@ module.exports = server => {
   server.post("/api/login", login);
   server.get("/api/users", authenticate, getUsers);
   server.get("/api/users/:userID", authenticate, checkUser, getUser);
+
   server.get(
     "/api/users/:userID/entries",
     authenticate,
@@ -149,16 +150,25 @@ function deleteEntryPerUser(req, res) {
 
 function updateEntryPerUser(req, res) {
   const { entryID } = req.params;
-  const updatedInfo = req.body;
+  const { id, entry, user_id, updated_at } = req.body;
   db("entries")
     .where({ id: entryID })
-    .update(updatedInfo)
-    .then(count => {
-      if (count) {
-        res.status(202).json(count);
-      } else {
-        res.status(404).json({ message: "Entry Does Not Exist" });
-      }
+    .first()
+    .then(entry => {
+      let initialDate = entry;
+      initialDate += "";
+      console.log("yeet entry:", initialDate);
+      db("entries")
+        .where({ id: entryID }).first()
+        .update({ id, entry, user_id, updated_at, created_at: initialDate })
+        .then(count => {
+          if (count) {
+            res.status(202).json(count);
+          } else {
+            res.status(404).json({ message: "Entry Does Not Exist" });
+          }
+        })
+        .catch(serverError(res));
     })
     .catch(serverError(res));
 }
