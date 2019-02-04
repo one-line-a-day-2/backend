@@ -15,6 +15,7 @@ module.exports = server => {
   server.get("/api/users", authenticate, getUsers);
   server.get("/api/users/:userID", authenticate, checkUser, getUser);
 
+
   server.get(
     "/api/users/:userID/entries",
     authenticate,
