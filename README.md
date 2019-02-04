@@ -9,11 +9,14 @@
 	"password": "pass",
 	"firstname": "first",
 	"lastname": "last"
-} |
+}
+|
+
 | POST   | /api/login    | Use the credentials sent inside the `body` to authenticate the user. On successful login, create a new JWT with the user id as the subject and send it back to the client. body = {
 	"username": "user2",
 	"password": "pass1",
 }|
+
 | GET    | /api/users    | If the user is logged in, respond with an array of all the users contained in the database. If the user is not logged in repond with the err code.                    |
 
 | GET    | /api/users/userID    | If the user is logged in, and is the correct user, respond with an object with the user user info. If the user is not logged in repond with the err code.   
