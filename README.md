@@ -2,17 +2,13 @@
 
 #### Endpoints
 
-| Method | Endpoint      | Description                                                                            | body |
-| ------ | ------------- | -------------------------------------------------------------------------------------- |
-| POST   | /api/register | Creates a `user` using the information sent inside the `body` of the request. |{
-
-    "username": "user",
-    "password": "pass",
+| Method | Endpoint      | Description                                                                   | body                  |
+| ------ | ------------- | ----------------------------------------------------------------------------- | --------------------- |
+| POST   | /api/register | Creates a `user` using the information sent inside the `body` of the request. | { "username": "user", "password": "pass",
     "firstname": "first",
-    "lastname": "last"
+    "lastname": "last" } |
 
-}
-|
+
 
 | POST | /api/login | Use the credentials sent inside the `body` to authenticate the user. On successful login, create a new JWT with the user id as the subject and send it back to the client.| body = {
 "username": "user2",
