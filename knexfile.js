@@ -12,11 +12,21 @@ const pg = require('pg');
 pg.defaults.ssl = true;
 
 module.exports = {
-  development: {
+  production: {
     // client: 'sqlite3',
     client: 'pg',
     // connection: { filename: './api/database/auth.db3' }, // change this if you want a different name for the database
     connection: dbConnection,
+    useNullAsDefault: true, // used to avoid warning on console
+    migrations: {
+      directory: './api/database/migrations',
+      tableName: 'dbmigrations',
+    },
+    seeds: { directory: './api/database/seeds' },
+  },
+  development: {
+    client: 'sqlite3',
+    connection: { filename: './api/database/auth.db3' }, 
     useNullAsDefault: true, // used to avoid warning on console
     migrations: {
       directory: './api/database/migrations',
