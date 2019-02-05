@@ -9,8 +9,7 @@ exports.up = function(knex) {
       users.string('password', 255).notNullable();
       users.string('firstname', 255).notNullable();
       users.string('lastname', 255).notNullable();
-      users.timestamp('created_at', true).defaultTo(knex.fn.now());
-    //   entries.timestamp("created_at", true).defaultTo(knex.fn.now());
+      users.timestamp("created_at", true).defaultTo(knex.fn.now());
     });
   };
   
