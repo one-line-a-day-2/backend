@@ -22,7 +22,7 @@ module.exports = {
       directory: './api/database/migrations',
       tableName: 'dbmigrations',
     },
-    seeds: { directory: './api/database/seeds' },
+    // seeds: { directory: './api/database/seeds' },
   }
   // production: {
   //   client: 'pg',
