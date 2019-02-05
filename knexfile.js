@@ -1,4 +1,4 @@
-/// Update with your config settings.s
+/// Update with your config settings.s//
 require('dotenv').config(); 
 
 const localPg = {
@@ -14,7 +14,7 @@ const pg = require('pg');
 pg.defaults.ssl = true;
 
 module.exports = {
-  development: {
+  production: {
     client: 'pg',
     connection: dbConnection,
     useNullAsDefault: true, // used to avoid warning on console
@@ -23,25 +23,15 @@ module.exports = {
       tableName: 'dbmigrations',
     },
     // seeds: { directory: './api/database/seeds' },
-  }
-  // production: {
-  //   client: 'pg',
-  //   connection: dbConnection,
-  //   useNullAsDefault: true, // used to avoid warning on console
-  //   migrations: {
-  //     directory: './api/database/migrations',
-  //     tableName: 'dbmigrations',
-  //   },
-  //   seeds: { directory: './api/database/seeds' },
-  // },
-  // development: {
-  //   client: 'sqlite3',
-  //   connection: { filename: './api/database/auth.db3' }, 
-  //   useNullAsDefault: true, // used to avoid warning on console
-  //   migrations: {
-  //     directory: './api/database/migrations',
-  //     tableName: 'dbmigrations',
-  //   },
-  //   seeds: { directory: './api/database/seeds' },
-  // },
+  },
+  development: {
+    client: 'sqlite3',
+    connection: { filename: './api/database/auth.db3' }, 
+    useNullAsDefault: true, // used to avoid warning on console
+    migrations: {
+      directory: './api/database/migrations',
+      tableName: 'dbmigrations',
+    },
+    seeds: { directory: './api/database/seeds' },
+  },
 };
