@@ -58,7 +58,9 @@ const serverError = res => err => {
   res.status(500).json(err);
 };
 const getSuccess = res => data => {
-  res.status(200).json(data);
+  data.length > 0
+    ? res.status(200).json(data)
+    : res.status(404).json({ message: "does not exist" });
 };
 
 const delSuccess = res => data => {
