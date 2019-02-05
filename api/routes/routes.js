@@ -151,17 +151,17 @@ function deleteEntryPerUser(req, res) {
 
 function updateEntryPerUser(req, res) {
   const { entryID } = req.params;
-  const { id, entry, user_id, updated_at } = req.body;
-  db("entries")
-    .where({ id: entryID })
-    .first()
-    .then(entry => {
-      let initialDate = entry;
-      initialDate += "";
-      console.log("yeet entry:", initialDate);
+  const updateInfo = req.body;
+  // db("entries")
+  //   .where({ id: entryID })
+  //   .first()
+  //   .then(entryn => {
+  //     let initialDate = entryn.created_at;
+      
+  //     console.log("yeet entry:", initialDate);
       db("entries")
         .where({ id: entryID }).first()
-        .update({ id, entry, user_id, updated_at, created_at: initialDate })
+        .update(updateInfo)
         .then(count => {
           if (count) {
             res.status(202).json(count);
@@ -170,6 +170,6 @@ function updateEntryPerUser(req, res) {
           }
         })
         .catch(serverError(res));
-    })
-    .catch(serverError(res));
+    // })
+    // .catch(serverError(res));
 }

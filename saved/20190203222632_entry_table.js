@@ -9,7 +9,9 @@ exports.up = function(knex) {
         .references("id")
         .inTable("users");
   
-      entries.timestamps(true, true);
+      // entries.timestamps(true, true);
+      table.timestamp('created_at', { useTz: true });
+      table.timestamp('updated_at', { useTz: true });
     });
   };
   
