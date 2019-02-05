@@ -5,7 +5,8 @@ const {
   authenticate,
   generateToken,
   checkUser,
-  checkEntry
+  checkEntry,
+  checkEntryForDate
 } = require("../helpers/helpers.js");
 const db = require("../database/dbConfig");
 
@@ -15,8 +16,8 @@ module.exports = server => {
   server.post("/api/login", login);
   server.get("/api/users", authenticate, getUsers);
   server.get("/api/users/:userID", authenticate, checkUser, getUser);
-
-
+  server.delete("/api/users/:userID", authenticate, checkUser, deleteUser);
+  server.put("/api/users/:userID", authenticate, checkUser, updateUser);
   server.get(
     "/api/users/:userID/entries",
     authenticate,
@@ -27,6 +28,7 @@ module.exports = server => {
     "/api/users/:userID/entries",
     authenticate,
     checkUser,
+    checkEntryForDate,
     postEntriesPerUser
   );
   server.get(
@@ -103,6 +105,33 @@ function login(req, res) {
     .catch(serverError(res));
 }
 
+function deleteUser(req, res) {
+  const { userID } = req.params;
+  db("users")
+    .where({ id: userID })
+    .del()
+    .then(delSuccess(res))
+    .catch(serverErrorGetId(res));
+}
+
+function updateUser(req, res) {
+  const { userID } = req.params;
+  const updateInfo = req.body;
+  updateInfo.password = bcrypt.hashSync(updateInfo.password, 16);
+  db("users")
+    .where({ id: userID })
+    .first()
+    .update(updateInfo)
+    .then(count => {
+      if (count) {
+        res.status(202).json(count);
+      } else {
+        res.status(404).json({ message: "User Does Not Exist" });
+      }
+    })
+    .catch(serverError(res));
+}
+
 function getUsers(req, res) {
   db("users")
     .then(getSuccess(res))
@@ -153,24 +182,16 @@ function deleteEntryPerUser(req, res) {
 function updateEntryPerUser(req, res) {
   const { entryID } = req.params;
   const updateInfo = req.body;
-  // db("entries")
-  //   .where({ id: entryID })
-  //   .first()
-  //   .then(entryn => {
-  //     let initialDate = entryn.created_at;
-      
-  //     console.log("yeet entry:", initialDate);
-      db("entries")
-        .where({ id: entryID }).first()
-        .update(updateInfo)
-        .then(count => {
-          if (count) {
-            res.status(202).json(count);
-          } else {
-            res.status(404).json({ message: "Entry Does Not Exist" });
-          }
-        })
-        .catch(serverError(res));
-    // })
-    // .catch(serverError(res));
+  db("entries")
+    .where({ id: entryID })
+    .first()
+    .update(updateInfo)
+    .then(count => {
+      if (count) {
+        res.status(202).json(count);
+      } else {
+        res.status(404).json({ message: "Entry Does Not Exist" });
+      }
+    })
+    .catch(serverError(res));
 }
