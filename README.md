@@ -1,8 +1,7 @@
 # One Line a Day Back End (JWTs)
 
 ## Server
-| Method |
-| https://one-line-a-day-2.herokuapp.com/ |
+https://one-line-a-day-2.herokuapp.com/
 
 #### Endpoints
 
