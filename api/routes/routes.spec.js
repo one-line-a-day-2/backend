@@ -154,7 +154,7 @@ describe("routes.js", () => {
     it("should respond with status code 202 Accepted/Body: 1", async () => {
       const body = {
         entry: "updated entry",
-        user_id: "1",
+        user_id: 1,
         Authorization: testToken
       };
       let response = await request(server.server)
