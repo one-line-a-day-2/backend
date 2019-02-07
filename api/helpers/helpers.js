@@ -83,7 +83,7 @@ function checkEntry(req, res, next) {
       }
     })
     .catch(err => {
-      res.status(400).json("didn;t't");
+      res.status(400).json("didn't");
     });
 }
 
