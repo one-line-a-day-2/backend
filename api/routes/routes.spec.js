@@ -106,7 +106,7 @@ describe("routes.js", () => {
       await db("entries").truncate();
       const body = {
         entry: "entry",
-        user_id: "1",
+        user_id: 1, //"1"
         Authorization: testToken
       };
       let response = await request(server.server)

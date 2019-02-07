@@ -163,6 +163,7 @@ function getUser(req, res) {
 
 function getAllEntriesPerUser(req, res) {
   const { userID } = req.params;
+  // console.log("userID",userID);
   db("entries")
     .where({ user_id: userID })
     .then(getSuccess(res))
