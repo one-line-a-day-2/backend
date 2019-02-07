@@ -15,6 +15,9 @@ module.exports = server => {
   server.post("/api/register", register);
   server.post("/api/login", login);
   server.get("/api/users", authenticate, getUsers);
+
+  server.get("/api/users/quantity", getUsersQuantity);
+
   server.get("/api/users/:userID", authenticate, checkUser, getUser);
   server.delete("/api/users/:userID", authenticate, checkUser, deleteUser);
   server.put("/api/users/:userID", authenticate, checkUser, updateUser);
@@ -167,6 +170,14 @@ function getUsers(req, res) {
       } else {
         res.status(404).json({ message: "does not exist" });
       }
+    })
+    .catch(serverError(res));
+}
+
+function getUsersQuantity(req, res) {
+  db("users")
+    .then(data => {
+      res.json(data.length);
     })
     .catch(serverError(res));
 }
