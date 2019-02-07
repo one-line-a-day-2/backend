@@ -15,8 +15,14 @@ module.exports = {
 
 // implementation details
 function authenticate(req, res, next) {
-  const token = req.get("Authorization");
-  console.log({ token: token });
+  let testToken = req.body.Authorization;
+  let token = "";
+  if (testToken) {
+    token = testToken;
+  } else {
+    token = req.get("Authorization");
+  }
+  console.log(req.body);
   if (token) {
     jwt.verify(token, jwtKey, (err, decoded) => {
       if (err) {
@@ -87,7 +93,7 @@ function checkEntryForDate(req, res, next) {
   let dateNow = new Date();
   dateNow = dateNow.toISOString().slice(0, 10);
   console.log("date", dateNow);
-  if(entryInfo.user_id !== userID){
+  if (entryInfo.user_id !== userID) {
     res.status(400).json({
       message: `Provided Incorrect user_id: ${entryInfo.user_id}`
     });
