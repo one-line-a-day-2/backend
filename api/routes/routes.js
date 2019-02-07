@@ -149,7 +149,25 @@ function updateUser(req, res) {
 
 function getUsers(req, res) {
   db("users")
-    .then(getSuccess(res))
+    .then(data => {
+      if (data.length > 0) {
+        let passremoved = [];
+        data.map(item => {
+          let { id, username, firstname, lastname, email, created_at } = item;
+          passremoved.push({
+            id: id,
+            username: username,
+            firstname: firstname,
+            lastname: lastname,
+            email: email,
+            created_at: created_at
+          });
+        });
+        res.status(200).json(passremoved);
+      } else {
+        res.status(404).json({ message: "does not exist" });
+      }
+    })
     .catch(serverError(res));
 }
 
@@ -157,7 +175,25 @@ function getUser(req, res) {
   const { userID } = req.params;
   db("users")
     .where({ id: userID })
-    .then(getSuccess(res))
+    .then(data => {
+      if (data.length > 0) {
+        let passremoved = [];
+        data.map(item => {
+          let { id, username, firstname, lastname, email, created_at } = item;
+          passremoved.push({
+            id: id,
+            username: username,
+            firstname: firstname,
+            lastname: lastname,
+            email: email,
+            created_at: created_at
+          });
+        });
+        res.status(200).json(passremoved);
+      } else {
+        res.status(404).json({ message: "does not exist" });
+      }
+    })
     .catch(serverErrorGetId(res));
 }
 
