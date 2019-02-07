@@ -70,7 +70,7 @@ function checkEntry(req, res, next) {
   console.log(req.decoded);
   const { id } = req.decoded;
   let { entryID } = req.params;
-  entryID = Number(entryID);
+  // entryID = Number(entryID);
   console.log({ entry: entryID }, { id: id });
   db("entries")
     .where({ user_id: id, id: entryID })
@@ -88,12 +88,17 @@ function checkEntry(req, res, next) {
 }
 
 function checkEntryForDate(req, res, next) {
-  const entryInfo = req.body;
-  const { userID } = req.params;
+  let entryInfo = req.body;
+  let { userID } = req.params;
+  userID = Number(userID);
+  let val = entryInfo.user_id
+  val = Number(val);
+  // console.log("userid",userID);
+  // console.log("userid",entryInfo.user_id);
   let dateNow = new Date();
   dateNow = dateNow.toISOString().slice(0, 10);
   console.log("date", dateNow);
-  if (entryInfo.user_id !== userID) {
+  if (val !== userID) {
     res.status(400).json({
       message: `Provided Incorrect user_id: ${entryInfo.user_id}`
     });
@@ -103,10 +108,10 @@ function checkEntryForDate(req, res, next) {
     .then(entry => {
       console.log(entry);
       for (let i = 0; i < entry.length; i++) {
-        let val = entry[i].created_at;
-        val = val.split(" ");
+        let val2 = entry[i].created_at;
+        val2 = val.split(" ");
         console.log("val", val);
-        if (val[0] === dateNow) {
+        if (val2[0] === dateNow) {
           res.status(400).json({
             message: `Entry Already Exists for this date: ${dateNow}`
           });
