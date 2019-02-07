@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "server": "nodemon index.js",
-    "start": "node index.js"
+    "start": "node index.js",
+    "test": "cross-env jest --watch --verbose"
   },
   "repository": {
     "type": "git",
@@ -31,6 +32,10 @@
     "sqlite3": "^4.0.6"
   },
   "devDependencies": {
-    "nodemon": "^1.18.9"
+    "axios": "^0.18.0",
+    "cross-env": "^5.2.0",
+    "jest": "^24.1.0",
+    "nodemon": "^1.18.9",
+    "supertest": "^3.4.2"
   }
 }

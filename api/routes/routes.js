@@ -118,20 +118,33 @@ function deleteUser(req, res) {
 
 function updateUser(req, res) {
   const { userID } = req.params;
-  const updateInfo = req.body;
-  updateInfo.password = bcrypt.hashSync(updateInfo.password, 16);
+  let { username, firstname, lastname, password, email } = req.body;
+  password = bcrypt.hashSync(password, 16);
   db("users")
     .where({ id: userID })
-    .first()
-    .update(updateInfo)
-    .then(count => {
-      if (count) {
-        res.status(202).json(count);
-      } else {
-        res.status(404).json({ message: "User Does Not Exist" });
-      }
+    .then(data => {
+      db("users")
+        .where({ id: userID })
+        .first()
+        .update({
+          id: data.id,
+          username: username,
+          password: password,
+          firstname: firstname,
+          lastname: lastname,
+          email: email,
+          created_at: data.created_at
+        })
+        .then(count => {
+          if (count) {
+            res.status(202).json(count);
+          } else {
+            res.status(404).json({ message: "User Does Not Exist" });
+          }
+        })
+        .catch(serverError(res));
     })
-    .catch(serverError(res));
+    .catch(serverErrorGetId(res));
 }
 
 function getUsers(req, res) {
@@ -157,9 +170,12 @@ function getAllEntriesPerUser(req, res) {
 }
 
 function postEntriesPerUser(req, res) {
-  const entryInfo = req.body;
+  let { entry, user_id } = req.body;
   db("entries")
-    .insert(entryInfo)
+    .insert({
+      entry: entry,
+      user_id: user_id
+    })
     .then(postSuccess(res))
     .catch(serverErrorPost(res));
 }
@@ -183,17 +199,29 @@ function deleteEntryPerUser(req, res) {
 
 function updateEntryPerUser(req, res) {
   const { entryID } = req.params;
-  const updateInfo = req.body;
+  let { entry, user_id } = req.body;
+  const { userID } = req.params;
+
   db("entries")
     .where({ id: entryID })
-    .first()
-    .update(updateInfo)
-    .then(count => {
-      if (count) {
-        res.status(202).json(count);
-      } else {
-        res.status(404).json({ message: "Entry Does Not Exist" });
-      }
+    .then(data => {
+      db("entries")
+        .where({ id: entryID })
+        .first()
+        .update({
+          id: data.id,
+          entry: entry,
+          user_id: user_id,
+          created_at: data.created_at
+        })
+        .then(count => {
+          if (count) {
+            res.status(202).json(count);
+          } else {
+            res.status(404).json({ message: "Entry Does Not Exist" });
+          }
+        })
+        .catch(serverError(res));
     })
-    .catch(serverError(res));
+    .catch(serverErrorGetId(res));
 }
