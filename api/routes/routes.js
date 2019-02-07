@@ -15,6 +15,9 @@ module.exports = server => {
   server.post("/api/register", register);
   server.post("/api/login", login);
   server.get("/api/users", authenticate, getUsers);
+
+  server.get("/api/users/quantity", getUsersQuantity);
+
   server.get("/api/users/:userID", authenticate, checkUser, getUser);
   server.delete("/api/users/:userID", authenticate, checkUser, deleteUser);
   server.put("/api/users/:userID", authenticate, checkUser, updateUser);
@@ -149,7 +152,33 @@ function updateUser(req, res) {
 
 function getUsers(req, res) {
   db("users")
-    .then(getSuccess(res))
+    .then(data => {
+      if (data.length > 0) {
+        let passremoved = [];
+        data.map(item => {
+          let { id, username, firstname, lastname, email, created_at } = item;
+          passremoved.push({
+            id: id,
+            username: username,
+            firstname: firstname,
+            lastname: lastname,
+            email: email,
+            created_at: created_at
+          });
+        });
+        res.status(200).json(passremoved);
+      } else {
+        res.status(404).json({ message: "does not exist" });
+      }
+    })
+    .catch(serverError(res));
+}
+
+function getUsersQuantity(req, res) {
+  db("users")
+    .then(data => {
+      res.json(data.length);
+    })
     .catch(serverError(res));
 }
 
@@ -157,7 +186,25 @@ function getUser(req, res) {
   const { userID } = req.params;
   db("users")
     .where({ id: userID })
-    .then(getSuccess(res))
+    .then(data => {
+      if (data.length > 0) {
+        let passremoved = [];
+        data.map(item => {
+          let { id, username, firstname, lastname, email, created_at } = item;
+          passremoved.push({
+            id: id,
+            username: username,
+            firstname: firstname,
+            lastname: lastname,
+            email: email,
+            created_at: created_at
+          });
+        });
+        res.status(200).json(passremoved);
+      } else {
+        res.status(404).json({ message: "does not exist" });
+      }
+    })
     .catch(serverErrorGetId(res));
 }
 

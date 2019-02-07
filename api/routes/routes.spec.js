@@ -2,7 +2,6 @@ const request = require("supertest");
 const server = require("../server.js");
 const db = require("../database/dbConfig.js");
 
-
 jest.setTimeout(100000);
 
 let testToken = "";
@@ -63,6 +62,15 @@ describe("routes.js", () => {
       expect(id).toEqual(1);
       expect(username).toEqual("user1");
       expect(email).toEqual("email1");
+    });
+  });
+
+  describe("GET QTY of Users/ endpoint", () => {
+    it("Respond with status code 200 OK/Body: qty 1", async () => {
+      let response = await request(server.server).get("/api/users/quantity");
+      expect(response.status).toEqual(200);
+      const val = response.body;
+      expect(val).toEqual(1);
     });
   });
 
