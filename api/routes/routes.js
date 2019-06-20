@@ -1,32 +1,56 @@
 ///
 require("dotenv").config();
-const bcrypt = require("bcryptjs");
+
 const {
   authenticate,
-  generateToken,
   checkUser,
   checkEntry,
   checkEntryForDate
 } = require("../helpers/helpers.js");
-const db = require("../database/dbConfig");
+
+const {
+  register,
+  login,
+  deleteUser,
+  updateUser,
+  getUsers,
+  getUsersQuantity,
+  getUser
+} = require("./userHelpers");
+
+const {
+  getAllEntriesPerUser,
+  postEntriesPerUser,
+  getEntryPerUser,
+  deleteEntryPerUser,
+  updateEntryPerUser
+} = require("./entryHelpers");
 
 module.exports = server => {
+  // sanity check!
   server.get("/", test);
+  // Creates a user using the information sent inside the body of the request. username and email require unique values, all values are require for post success.
   server.post("/api/register", register);
+  // Use the credentials sent inside the body to authenticate the user. On successful login, create a new JWT with the user id as the subject and send it back to the client, via localstorage. equired Storage KEY: jwt. Example: localStorage.setItem("jwt", res.data.token);
   server.post("/api/login", login);
+  // If the user is logged in, the response will contain an array of all the users in the database. If the user is not logged in the response will be an error code. (for testing!)
   server.get("/api/users", authenticate, getUsers);
-
+  // The response will be the integer of the current QTY of users (for home page)
   server.get("/api/users/quantity", getUsersQuantity);
-
+  // 	userID is a dynamic variable set by the front end. If the user is logged in, and userID is correct, the response will be an object with the user info. If the user is not logged in or does not exist, the response will be an error code.
   server.get("/api/users/:userID", authenticate, checkUser, getUser);
+  // userID is a dynamic variable set by the front end. If the user is logged in, and userID is correct, the response will be an empty object and the user will be deleted from the database. If the user is not logged-in or does not exist, the response will be an error code.
   server.delete("/api/users/:userID", authenticate, checkUser, deleteUser);
+  // userID is a dynamic variable set by the front end. If the user is logged in, and userID is correct, the response will be 1. If the user is not logged-in or does not exist, the response will be an error code. All values are required for put success.
   server.put("/api/users/:userID", authenticate, checkUser, updateUser);
+  // 	userID is a dynamic variable set by the front end. If the user is logged in, and userID is correct, the response will an object with the users entry info. If the user is not logged or has no entries, the response will be an error code.
   server.get(
     "/api/users/:userID/entries",
     authenticate,
     checkUser,
     getAllEntriesPerUser
   );
+  // userID is a dynamic variable set by the front end. If the user is logged in, and userID is correct, the response will be a new entry. If the user is not logged in, the response will be an error code. All values are required for a successful post.
   server.post(
     "/api/users/:userID/entries",
     authenticate,
@@ -34,6 +58,7 @@ module.exports = server => {
     checkEntryForDate,
     postEntriesPerUser
   );
+  // userID and entryID are dynamic variable's set by the front end. If the user is logged in, userID/entryID are correct, and the entry exists, the response will be an object with the users entry. If the user is not logged-in or userID/entryID are incorrect or does not contain the entry, the response will be an error code.
   server.get(
     "/api/users/:userID/entries/:entryID",
     authenticate,
@@ -41,6 +66,7 @@ module.exports = server => {
     checkEntry,
     getEntryPerUser
   );
+  // userID and entryID are dynamic variable's set by the front end. If the user is logged in, userID/entryID are correct, and the entry exists, the response will be an empty object and the entry shall be removed from the database. If the user is not logged-in or userID/entryID are incorrect or does not contain the entry, the response will be an error code.
   server.delete(
     "/api/users/:userID/entries/:entryID",
     authenticate,
@@ -48,6 +74,7 @@ module.exports = server => {
     checkEntry,
     deleteEntryPerUser
   );
+  // userID and entryID are dynamic variable's set by the front end. If the user is logged in, userID/entryID are correct, and the entry exists, the response will be a 1. If the user is not logged-in or userID/entryID are incorrect or does not contain the entry, the response will be an error code. All values are required for a successful put.
   server.put(
     "/api/users/:userID/entries/:entryID",
     authenticate,
@@ -57,219 +84,6 @@ module.exports = server => {
   );
 };
 
-const serverError = res => err => {
-  res.status(500).json(err);
-};
-const getSuccess = res => data => {
-  data.length > 0
-    ? res.status(200).json(data)
-    : res.status(404).json({ message: "does not exist" });
-};
-
-const delSuccess = res => data => {
-  res.status(204).json(data);
-};
-
-const postSuccess = res => id => {
-  res.status(201).json(id);
-};
-const serverErrorPost = res => err => {
-  res.status(422).json(err);
-};
-
-const serverErrorGetId = res => err => {
-  res.status(404).json(err);
-};
-
 function test(req, res) {
   res.status(200).json(`Sanity Check Server is Connected: ${process.env.PORT}`);
-}
-
-function register(req, res) {
-  const userInfo = req.body;
-  userInfo.password = bcrypt.hashSync(userInfo.password, 16);
-  db("users")
-    .insert(userInfo)
-    .then(postSuccess(res))
-    .catch(serverErrorPost(res));
-}
-
-function login(req, res) {
-  const creds = req.body;
-  db("users")
-    .where({ username: creds.username })
-    .first()
-    .then(user => {
-      if (user && bcrypt.compareSync(creds.password, user.password)) {
-        const token = generateToken(user);
-        res.status(200).json({ token: token, id: user.id });
-      } else {
-        res.status(401).json({ message: "Incorrect Username or Password" });
-      }
-    })
-    .catch(serverError(res));
-}
-
-function deleteUser(req, res) {
-  const { userID } = req.params;
-  db("users")
-    .where({ id: userID })
-    .del()
-    .then(delSuccess(res))
-    .catch(serverErrorGetId(res));
-}
-
-function updateUser(req, res) {
-  const { userID } = req.params;
-  let { username, firstname, lastname, password, email } = req.body;
-  password = bcrypt.hashSync(password, 16);
-  db("users")
-    .where({ id: userID })
-    .then(data => {
-      db("users")
-        .where({ id: userID })
-        .first()
-        .update({
-          id: data.id,
-          username: username,
-          password: password,
-          firstname: firstname,
-          lastname: lastname,
-          email: email,
-          created_at: data.created_at
-        })
-        .then(count => {
-          if (count) {
-            res.status(202).json(count);
-          } else {
-            res.status(404).json({ message: "User Does Not Exist" });
-          }
-        })
-        .catch(serverError(res));
-    })
-    .catch(serverErrorGetId(res));
-}
-
-function getUsers(req, res) {
-  db("users")
-    .then(data => {
-      if (data.length > 0) {
-        let passremoved = [];
-        data.map(item => {
-          let { id, username, firstname, lastname, email, created_at } = item;
-          passremoved.push({
-            id: id,
-            username: username,
-            firstname: firstname,
-            lastname: lastname,
-            email: email,
-            created_at: created_at
-          });
-        });
-        res.status(200).json(passremoved);
-      } else {
-        res.status(404).json({ message: "does not exist" });
-      }
-    })
-    .catch(serverError(res));
-}
-
-function getUsersQuantity(req, res) {
-  db("users")
-    .then(data => {
-      res.json(data.length);
-    })
-    .catch(serverError(res));
-}
-
-function getUser(req, res) {
-  const { userID } = req.params;
-  db("users")
-    .where({ id: userID })
-    .then(data => {
-      if (data.length > 0) {
-        let passremoved = [];
-        data.map(item => {
-          let { id, username, firstname, lastname, email, created_at } = item;
-          passremoved.push({
-            id: id,
-            username: username,
-            firstname: firstname,
-            lastname: lastname,
-            email: email,
-            created_at: created_at
-          });
-        });
-        res.status(200).json(passremoved);
-      } else {
-        res.status(404).json({ message: "does not exist" });
-      }
-    })
-    .catch(serverErrorGetId(res));
-}
-
-function getAllEntriesPerUser(req, res) {
-  const { userID } = req.params;
-  // console.log("userID",userID);
-  db("entries")
-    .where({ user_id: userID })
-    .then(getSuccess(res))
-    .catch(serverError(res));
-}
-
-function postEntriesPerUser(req, res) {
-  let { entry, user_id } = req.body;
-  db("entries")
-    .insert({
-      entry: entry,
-      user_id: user_id
-    })
-    .then(postSuccess(res))
-    .catch(serverErrorPost(res));
-}
-
-function getEntryPerUser(req, res) {
-  const { entryID } = req.params;
-  db("entries")
-    .where({ id: entryID })
-    .then(getSuccess(res))
-    .catch(serverErrorGetId(res));
-}
-
-function deleteEntryPerUser(req, res) {
-  const { entryID } = req.params;
-  db("entries")
-    .where({ id: entryID })
-    .del()
-    .then(delSuccess(res))
-    .catch(serverErrorGetId(res));
-}
-
-function updateEntryPerUser(req, res) {
-  const { entryID } = req.params;
-  let { entry, user_id } = req.body;
-  const { userID } = req.params;
-
-  db("entries")
-    .where({ id: entryID })
-    .then(data => {
-      db("entries")
-        .where({ id: entryID })
-        .first()
-        .update({
-          id: data.id,
-          entry: entry,
-          user_id: user_id,
-          created_at: data.created_at
-        })
-        .then(count => {
-          if (count) {
-            res.status(202).json(count);
-          } else {
-            res.status(404).json({ message: "Entry Does Not Exist" });
-          }
-        })
-        .catch(serverError(res));
-    })
-    .catch(serverErrorGetId(res));
 }
