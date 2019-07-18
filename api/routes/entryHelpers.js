@@ -1,3 +1,4 @@
+let moment = require("moment");
 const {
   serverError,
   getSuccess,
@@ -14,8 +15,10 @@ module.exports = {
   postEntriesPerUser,
   getEntryPerUser,
   deleteEntryPerUser,
-  updateEntryPerUser
+  updateEntryPerUser,
+  tenYearInitialized
 };
+
 
 function getAllEntriesPerUser(req, res) {
   const { userID } = req.params;
@@ -35,6 +38,53 @@ function postEntriesPerUser(req, res) {
     })
     .then(postSuccess(res))
     .catch(serverErrorPost(res));
+}
+
+function tenYearInitialized(req, res){
+  console.log("body",req.body);
+  let {userId} = req.body;
+  console.log("userId",userId);
+  let end = moment().add(10, 'y').format('YYYY MM DD ddd'); 
+  let stop = false;
+  let count = 0
+
+  // let val = moment().add(count, 'd').format('YYYY MM DD ddd');
+  // console.log("val",val);
+  // db("entries")
+  //   .insert({
+  //     entry: "...",
+  //     user_id: userId,
+  //     date: val
+  //   })
+  //   .then(postSuccess(res))
+  //   .catch(serverErrorPost(res));
+
+  // while(stop !== true){
+  function callback(){
+    let val = moment().add(count, 'd').format('YYYY MM DD ddd');
+    if(val === end){
+      // stop = true;
+      postSuccess(res);
+      return;
+    }else{
+      count++;
+    }
+    console.log("val", val);
+    db("entries")
+    .insert({
+      entry: "...",
+      user_id: userId,
+      date: val
+    })
+    .then((data)=>{
+      console.log("data", data)
+    }).then(()=>{ 
+        callback();
+    })
+    .catch(serverErrorPost(res));
+    
+  }
+  callback();
 }
 
 function getEntryPerUser(req, res) {
