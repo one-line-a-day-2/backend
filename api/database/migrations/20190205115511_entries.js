@@ -9,6 +9,7 @@ exports.up = function(knex) {
       .references("id")
       .inTable("users");
     entries.timestamp("created_at", true).defaultTo(knex.fn.now());
+    entries.text("date", 225).notNullable();
   });
 };
 

@@ -21,10 +21,11 @@ const {
     updateUser,
     getUsers,
     getUsersQuantity,
-    getUser
+    getUser,
+    getUserReg
   };
 
-  function register(req, res) {
+  function register(req, res, next) {
     // req.body = {
     //   username: "string",
     //   password: "string",
@@ -36,10 +37,16 @@ const {
     // hash password, mutate req.body.password to reflect hash
     userInfo.password = bcrypt.hashSync(userInfo.password, 16);
     // insert user to database
+    // let ID = 0;
     db("users")
       .insert(userInfo)
-      .then(postSuccess(res))
+      .then((id)=>{ 
+        req.body.userId = id[0]; 
+        // res.status(201).json(id);
+        next();
+      })
       .catch(serverErrorPost(res));
+    
   }
   
   function login(req, res) {
@@ -161,6 +168,23 @@ const {
             });
           });
           res.status(200).json(passremoved);
+        } else {
+          res.status(404).json({ message: "does not exist" });
+        }
+      })
+      .catch(serverErrorGetId(res));
+  }
+
+  function getUserReg(req, res, next) {
+    const { userId } = req.body;
+    db("users")
+      .where({ id: userId })
+      .then(data => {
+        if (data.length > 0) {
+        let { created_at } = data[0];
+          req.body.created_at = created_at;
+          // res.status(200);
+          next();
         } else {
           res.status(404).json({ message: "does not exist" });
         }
