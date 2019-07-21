@@ -42,6 +42,7 @@ const {
       .insert(userInfo)
       .then((id)=>{ 
         req.body.userId = id[0]; 
+        console.log("req.body.userId", req.body.userId);
         // res.status(201).json(id);
         next();
       })
@@ -177,6 +178,8 @@ const {
 
   function getUserReg(req, res, next) {
     const { userId } = req.body;
+    console.log("userId", userId);
+    console.log("req.body", req.body);
     db("users")
       .where({ id: userId })
       .then(data => {
