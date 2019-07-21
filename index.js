@@ -11,15 +11,15 @@ if(process.env.DB_ENV === 'development'){
   port = process.env.PORT;
 }
 
-// let moment = require("moment");
-// let start = moment().format('YYYY MM DD ddd'); 
-// let second = moment().add(1, 'd').format('YYYY MM DD ddd'); 
-// let end = moment().add(10, 'y').format('YYYY MM DD ddd'); 
+let moment = require("moment");
+let start = moment().format('YYYY MM DD ddd'); 
+let second = moment().add(1, 'd').format('YYYY MM DD ddd'); 
+let end = moment().add(10, 'y').format('YYYY MM DD ddd'); 
 
 server.listen(port, () => {
   // console.log(start);
   // console.log(second);
-  // console.log(end);
+  console.log(end);
 
   // let stop = false;
   // let count = 0

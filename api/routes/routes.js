@@ -25,14 +25,14 @@ const {
   getEntryPerUser,
   deleteEntryPerUser,
   updateEntryPerUser,
-  tenYearInitialized
+  tenYearInitialize
 } = require("./entryHelpers");
 
 module.exports = server => {
   // sanity check!
   server.get("/", test);
   // Creates a user using the information sent inside the body of the request. username and email require unique values, all values are require for post success.
-  server.post("/api/register", register, getUserReg, tenYearInitialized);
+  server.post("/api/register", register, getUserReg, tenYearInitialize);
   // Use the credentials sent inside the body to authenticate the user. On successful login, create a new JWT with the user id as the subject and send it back to the client, via localstorage. equired Storage KEY: jwt. Example: localStorage.setItem("jwt", res.data.token);
   server.post("/api/login", login);
   // If the user is logged in, the response will contain an array of all the users in the database. If the user is not logged in the response will be an error code. (for testing!)
