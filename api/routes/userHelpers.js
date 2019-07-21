@@ -25,31 +25,31 @@ const {
     getUserReg
   };
 
-  function register(req, res, next) {
-    // req.body = {
-    //   username: "string",
-    //   password: "string",
-    //   firstname: "string",
-    //   lastname: "string",
-    //   email: "string"
-    // };
-    const userInfo = req.body;
-    // hash password, mutate req.body.password to reflect hash
-    userInfo.password = bcrypt.hashSync(userInfo.password, 16);
-    // insert user to database
-    // let ID = 0;
-    db("users")
-      .insert(userInfo)
-      .then((id)=>{ 
-        console.log("id", id);
-        req.body.userId = id[0]; 
-        console.log("req.body.userId", req.body.userId);
-        // res.status(201).json(id);
-        next();
-      })
-      .catch(serverErrorPost(res));
+  // function register(req, res, next) {
+  //   // req.body = {
+  //   //   username: "string",
+  //   //   password: "string",
+  //   //   firstname: "string",
+  //   //   lastname: "string",
+  //   //   email: "string"
+  //   // };
+  //   const userInfo = req.body;
+  //   // hash password, mutate req.body.password to reflect hash
+  //   userInfo.password = bcrypt.hashSync(userInfo.password, 16);
+  //   // insert user to database
+  //   // let ID = 0;
+  //   db("users")
+  //     .insert(userInfo)
+  //     .then((id)=>{ 
+  //       console.log("id", id);
+  //       req.body.userId = id[0]; 
+  //       console.log("req.body.userId", req.body.userId);
+  //       // res.status(201).json(id);
+  //       next();
+  //     })
+  //     .catch(serverErrorPost(res));
     
-  }
+  // }
   
   function login(req, res) {
     // req.body = {
@@ -177,17 +177,53 @@ const {
       .catch(serverErrorGetId(res));
   }
 
-  function getUserReg(req, res, next) {
-    const { userId } = req.body;
-    console.log("userId", userId);
-    console.log("req.body", req.body);
+  // function getUserReg(req, res, next) {
+  //   const { userId } = req.body;
+  //   console.log("userId", userId);
+  //   console.log("req.body", req.body);
+  //   db("users")
+  //     .where({ id: userId })
+  //     .then(data => {
+  //       if (data.length > 0) {
+  //       let { created_at } = data[0];
+  //         req.body.created_at = created_at;
+  //         // res.status(200);
+  //         next();
+  //       } else {
+  //         res.status(404).json({ message: "does not exist" });
+  //       }
+  //     })
+  //     .catch(serverErrorGetId(res));
+  // }
+
+  function register(req, res, next) {
+    const userInfo = req.body;
+    // hash password, mutate req.body.password to reflect hash
+    userInfo.password = bcrypt.hashSync(userInfo.password, 16);
+    // insert user to database
     db("users")
-      .where({ id: userId })
+      .insert(userInfo)
+      .then(()=>{ 
+        next();
+      })
+      .catch(serverErrorPost(res));
+    
+  }
+
+  // console.log("id", id);
+  // req.body.userId = id[0]; 
+  // console.log("req.body.userId", req.body.userId);
+
+  function getUserReg(req, res, next) {
+    
+    db("users")
       .then(data => {
         if (data.length > 0) {
-        let { created_at } = data[0];
-          req.body.created_at = created_at;
-          // res.status(200);
+          const idArray = data.map((item)=>item.id);
+          console.log("idArray",idArray);
+          let userId = Math.max.apply(Math, idArray);
+          console.log("userId", userId);
+          req.body.userId = userId;
           next();
         } else {
           res.status(404).json({ message: "does not exist" });
