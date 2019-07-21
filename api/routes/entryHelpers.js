@@ -91,7 +91,7 @@ function tenYearInitialize(req, res){
   console.log("body",req.body);
   let {userId} = req.body;
   console.log("userId",userId);
-  let end = moment().add(10, 'y').format('YYYY MM DD ddd'); 
+  let end = moment().add(10, 'y').format('YYYY-MM-DD ddd'); 
   let stop = false;
   // let reachedMax = false;
   let max = 100;
@@ -118,7 +118,7 @@ function tenYearInitialize(req, res){
     reachedMax = false;
     console.log("loop");
     while(reachedMax !== true){
-      let val = moment().add(countDay, 'd').format('YYYY MM DD ddd');
+      let val = moment().add(countDay, 'd').format('YYYY-MM-DD ddd');
       console.log("count", count);  
       console.log("val", val);
       obj = {
