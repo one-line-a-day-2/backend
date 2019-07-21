@@ -41,6 +41,7 @@ const {
     db("users")
       .insert(userInfo)
       .then((id)=>{ 
+        console.log("id", id);
         req.body.userId = id[0]; 
         console.log("req.body.userId", req.body.userId);
         // res.status(201).json(id);
