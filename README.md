@@ -1,7 +1,60 @@
-# One Line a Day Back End (JWTs)
+# One Line a Day 
 
-## Server
-https://one-line-a-day-2.herokuapp.com
+## Getting Started
+
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+
+### Prerequisites
+
+If you have ```npm``` installed, you can just install Yarn with npm:
+
+```
+$ npm install yarn --global
+```
+
+### Installing
+
+A step by step series of examples that tell you how to get a development env running
+
+From the /notes folder run yarn install
+
+```
+$ yarn install
+```
+
+Followed by the appropriate start command
+
+```
+# yarn
+$ yarn server
+```
+
+## Deployment
+
+### Front End
+* [Netlify](https://www.netlify.com/) - Web Hosting Service
+* [GitHub](https://github.com/gittc100/One_Line_A_Day_Thomas_Front_End)
+
+### Back End
+* [Heroku](https://www.heroku.com/) - Server and Database Hosting Service
+- Production URL: https://one-line-a-day-2.herokuapp.com
+
+
+## Built With
+
+* [Node.js](https://nodejs.org/en/) - Server Runtime
+* [Express](https://expressjs.com/) - Node.js Framework
+* [Knex.js](https://knexjs.org/) - SQL query builder
+* [SQLite](https://sqlite.org/index.html) - SQL database engine
+* [Jest](https://jestjs.io/) - Testing Framework
+
+## Author
+
+* **Thomas Claydon** - [Github](https://github.com/gittc100)
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
 
 #### Endpoints
 
