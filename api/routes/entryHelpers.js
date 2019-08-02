@@ -25,7 +25,15 @@ function getAllEntriesPerUser(req, res) {
   // console.log("userID",userID);
   db("entries")
     .where({ user_id: userID })
-    .then(getSuccess(res))
+    .then((data)=>{
+      if(data.length > 0){
+        res.status(200).json(data.sort((a,b)=>{
+          return moment(a.date) - moment(b.date);
+        }))
+      }else{
+        res.status(404).json({ message: "does not exist" });
+      }
+    })
     .catch(serverError(res));
 }
 
@@ -91,42 +99,30 @@ function tenYearInitialize(req, res){
   console.log("body",req.body);
   let {userId} = req.body;
   console.log("userId",userId);
-  let end = moment().add(10, 'y').format('YYYY-MM-DD ddd'); 
+  let end = moment().add(10, 'y').format('YYYY-MM-DD'); 
   let stop = false;
-  // let reachedMax = false;
   let max = 100;
-  // let division = (365*10) / max;
   let count = 0
   let countDay = 0
   let obj;
   let bulkArray = [];
-  let test = [{ entry: '...', user_id: 29, date: '2019 10 20 Sun' },
-  { entry: '...', user_id: 29, date: '2019 10 21 Mon' },
-  { entry: '...', user_id: 29, date: '2019 10 22 Tue' },
-  { entry: '...', user_id: 29, date: '2019 10 23 Wed' },
-  { entry: '...', user_id: 29, date: '2019 10 24 Thu' },
-  { entry: '...', user_id: 29, date: '2019 10 25 Fri' },
-  { entry: '...', user_id: 29, date: '2019 10 26 Sat' },];
-
-  // db("entries").insert({
-  //    entry: '...', user_id: 21, date: '2019 10 20 Sun' 
-  // }).then(
-  //   postSuccess(res)
-  // ).catch(serverErrorPost(res));
 
   while(stop !== true){
     reachedMax = false;
-    console.log("loop");
     while(reachedMax !== true){
-      let val = moment().add(countDay, 'd').format('YYYY-MM-DD ddd');
-      console.log("count", count);  
-      console.log("val", val);
+      let val = moment().add(countDay, 'd').format();
+      let valf = moment().add(countDay, 'd').format('YYYY-MM-DD');
+      console.log("end",end);
+      console.log("valf",valf);
+      console.log("val",val);
+      // console.log("count", count);  
+      // console.log("val", val);
       obj = {
         entry: "...",
         user_id: userId,
         date: val
       }
-      if(val === end){
+      if(valf === end){
         bulkArray.push(obj);
         db("entries").insert(bulkArray)
         .then(postSuccess(res))
@@ -137,7 +133,7 @@ function tenYearInitialize(req, res){
       else if(count === max){
         // console.log("bulkArray", bulkArray);
         // console.log("test", test);
-        console.log("Posting");
+        // console.log("Posting");
         db("entries").insert(bulkArray)
         .then(postSuccess(res))
         .catch(serverErrorPost(res));
