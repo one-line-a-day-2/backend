@@ -37,6 +37,18 @@ function getAllEntriesPerUser(req, res) {
     .catch(serverError(res));
 }
 
+// function getAllEntriesPerUserDelete(req, res, next) {
+//   const { userID } = req.params;
+//   // console.log("userID",userID);
+//   db("entries")
+//     .where({ user_id: userID })
+//     .del()
+//     .then(()=>{
+//       next();
+//     })
+//     .catch(serverError(res));
+// }
+
 function postEntriesPerUser(req, res) {
   let { entry, user_id } = req.body;
   db("entries")

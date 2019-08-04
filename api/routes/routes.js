@@ -25,7 +25,8 @@ const {
   getEntryPerUser,
   deleteEntryPerUser,
   updateEntryPerUser,
-  tenYearInitialize
+  tenYearInitialize,
+  getAllEntriesPerUserDelete
 } = require("./entryHelpers");
 
 module.exports = server => {
@@ -42,14 +43,14 @@ module.exports = server => {
   // 	userID is a dynamic variable set by the front end. If the user is logged in, and userID is correct, the response will be an object with the user info. If the user is not logged in or does not exist, the response will be an error code.
   server.get("/api/users/:userID", /*authenticate,*/ /*checkUser,*/ getUser);
   // userID is a dynamic variable set by the front end. If the user is logged in, and userID is correct, the response will be an empty object and the user will be deleted from the database. If the user is not logged-in or does not exist, the response will be an error code.
-  server.delete("/api/users/:userID", /*authenticate,*/ /*checkUser,*/ deleteUser);
+  server.delete("/api/users/:userID", /*authenticate,*/ /*checkUser,*//*getAllEntriesPerUserDelete,*/ deleteUser);
   // userID is a dynamic variable set by the front end. If the user is logged in, and userID is correct, the response will be 1. If the user is not logged-in or does not exist, the response will be an error code. All values are required for put success.
   server.put("/api/users/:userID", /*authenticate,*/ /*checkUser,*/ updateUser);
   // 	userID is a dynamic variable set by the front end. If the user is logged in, and userID is correct, the response will an object with the users entry info. If the user is not logged or has no entries, the response will be an error code.
   server.get(
     "/api/users/:userID/entries",
-    /*authenticate,*/
-    /*checkUser,*/
+    authenticate,
+    checkUser,
     getAllEntriesPerUser
   );
   // userID is a dynamic variable set by the front end. If the user is logged in, and userID is correct, the response will be a new entry. If the user is not logged in, the response will be an error code. All values are required for a successful post.
@@ -79,9 +80,9 @@ module.exports = server => {
   // userID and entryID are dynamic variable's set by the front end. If the user is logged in, userID/entryID are correct, and the entry exists, the response will be a 1. If the user is not logged-in or userID/entryID are incorrect or does not contain the entry, the response will be an error code. All values are required for a successful put.
   server.put(
     "/api/users/:userID/entries/:entryID",
-    /*authenticate,*/
-    /*checkUser,*/
-    /*checkEntry,*/
+    authenticate,
+    checkUser,
+    checkEntry,
     updateEntryPerUser
   );
 };
